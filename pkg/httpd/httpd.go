@@ -138,6 +138,10 @@ Inbound HTTPS request %s from: %s
 				return
 			}
 		} else {
+			if strings.HasPrefix(strings.ToLower(r.URL.Path), "/callback/") {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
 			for source, target := range config.Rewrites {
 				if strings.Contains(r.Host, source) {
 					target := "https://" + strings.Replace(r.Host, source, target, 1) + r.URL.Path
@@ -203,6 +207,10 @@ Inbound plaintext HTTP request from: %s
 				return
 			}
 		} else {
+			if strings.HasPrefix(strings.ToLower(r.URL.Path), "/callback/") {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
 			for source, target := range config.Rewrites {
 				if strings.Contains(r.Host, source) {
 					target := "http://" + strings.Replace(r.Host, source, target, 1) + r.URL.Path
