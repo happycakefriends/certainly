@@ -104,6 +104,8 @@ Open the newly created systemd service definition file with your favorite text e
 ```
 [Unit]
 Description=Certainly
+StartLimitIntervalSec=30
+StartLimitBurst=5
 After=syslog.target network.target
 
 [Service]
@@ -112,6 +114,7 @@ WorkingDirectory=/path/to/install/certainly
 User=certainly
 ExecStart=/path/to/install/certainly/certainly
 TimeoutStartSec=30
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
