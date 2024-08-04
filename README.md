@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a5f90a3f-f0cf-4200-a671-d35a23abbc6e" width="200" />
+</p>
+
 # certainly
 
 Certainly is a offensive security toolkit to capture large amounts of traffic in various network protocols in bitflip and typosquat scenarios. The tool was built to support research on these topics, originally [presented at BlackHat USA 2024](https://www.blackhat.com/us-24/briefings/schedule/index.html#flipping-bits-your-credentials-are-certainly-mine-40040). 
@@ -27,6 +31,10 @@ Certainly will initiate the authentication sequence and log the user credentials
 ### SMTP(S)
 Certainly will kindly accept all email sent towards it and proceed delivering it to the log files.
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d4466506-a0ba-48e2-b0ec-4aceb4422f8a" width="200" />
+</p>
+
 ## Core features
 
 ### DNS
@@ -46,6 +54,12 @@ Certainly will kindly accept all email sent towards it and proceed delivering it
 ### Output
  - Default output format of JSONLines to feed in to your data analysis platform; ELK, Splunk, mad grep oneliners; whatever your prefer.
  - Extensible notification framework for sending automated notifications. Currently only supports Slack.
+
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9600991b-644e-4bc3-a23f-2812d3f44dfe" width="200" />
+</p>
+
 
 ## Installation on Linux
 For this documentation we're using `/path/to/install/certainly` as the example installation directory.
@@ -135,4 +149,9 @@ sudo systemctl enable certainly
 ```
 
 ### 7) Configure the domain
-Point the nameservers of your domain to certainly instance at your registrars configuration panel. This varies based on registrar.
+Point the nameservers of your domain to certainly instance at your registrars configuration panel. This varies based on registrar. You may need to use a helper domain with a static record pointing towards Certainly instance.
+
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2cfe181c-602f-4fb5-b99b-971ac0b07500" width="200" />
+</p>
