@@ -151,7 +151,6 @@ sudo systemctl enable certainly
 ### 7) Configure the domain
 Point the nameservers of your domain to certainly instance at your registrars configuration panel. This varies based on registrar. You may need to use a helper domain with a static record pointing towards Certainly instance.
 
-
 <p align="center">
   <img src="https://github.com/user-attachments/assets/2cfe181c-602f-4fb5-b99b-971ac0b07500" width="200" />
 </p>
