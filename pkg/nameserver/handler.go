@@ -83,7 +83,7 @@ func (n *Nameserver) answer(q dns.Question, remoteAddr string) ([]dns.RR, int, b
 		if n.answeringForDomain(q.Name) {
 			a := new(dns.A)
 			a.Hdr = dns.RR_Header{Name: q.Name, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 1}
-			ipv4Addr, _, _ := net.ParseCIDR(n.Config.General.IP + "/32")
+			ipv4Addr, _, _ := net.ParseCIDR(n.Config.NS.NSResponseIP + "/32")
 			a.A = ipv4Addr
 			r = append(r, a)
 		}
@@ -99,7 +99,7 @@ func (n *Nameserver) answer(q dns.Question, remoteAddr string) ([]dns.RR, int, b
 				// Add the A answer for the CNAME target to the response
 				a := new(dns.A)
 				a.Hdr = dns.RR_Header{Name: cn.Target, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 1}
-				ipv4Addr, _, _ := net.ParseCIDR(n.Config.General.IP + "/32")
+				ipv4Addr, _, _ := net.ParseCIDR(n.Config.NS.NSResponseIP + "/32")
 				a.A = ipv4Addr
 				r = append(r, a)
 			}
