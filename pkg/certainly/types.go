@@ -12,6 +12,8 @@ type CertainlyCFG struct {
 }
 
 type httpd struct {
+	HTTPPort                  string   `toml:"http_port"`
+	HTTPSPort                 string   `toml:"https_port"`
 	InjectionTemplateFilepath string   `toml:"injection_template_filepath"`
 	InjectionFilters          []string `toml:"injection_filters"`
 }
