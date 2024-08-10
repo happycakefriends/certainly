@@ -73,7 +73,7 @@ func (n *Nameserver) answer(q dns.Question, remoteAddr string) ([]dns.RR, int, b
 	if q.Qtype == dns.TypeMX {
 		if n.answeringForDomain(q.Name) {
 			amx := new(dns.MX)
-			amx.Hdr = dns.RR_Header{Name: q.Name, Rrtype: dns.TypeMX, Class: dns.ClassINET, Ttl: 1}
+			amx.Hdr = dns.RR_Header{Name: q.Name, Rrtype: dns.TypeMX, Class: dns.ClassINET, Ttl: uint32(n.Config.NS.Ttl)}
 			amx.Mx = dns.Fqdn(n.Config.NS.DefaultDomain)
 			amx.Preference = 10
 			r = append(r, amx)
@@ -82,7 +82,7 @@ func (n *Nameserver) answer(q dns.Question, remoteAddr string) ([]dns.RR, int, b
 	if q.Qtype == dns.TypeA {
 		if n.answeringForDomain(q.Name) {
 			a := new(dns.A)
-			a.Hdr = dns.RR_Header{Name: q.Name, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 1}
+			a.Hdr = dns.RR_Header{Name: q.Name, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: uint32(n.Config.NS.Ttl)}
 			ipv4Addr, _, _ := net.ParseCIDR(n.Config.NS.NSResponseIP + "/32")
 			a.A = ipv4Addr
 			r = append(r, a)
@@ -93,12 +93,12 @@ func (n *Nameserver) answer(q dns.Question, remoteAddr string) ([]dns.RR, int, b
 			// Do not answer CNAMES for the default domain to prevent endless loops because of some resolvers
 			if n.answeringForDomain(q.Name) {
 				cn := new(dns.CNAME)
-				cn.Hdr = dns.RR_Header{Name: q.Name, Rrtype: dns.TypeCNAME, Class: dns.ClassINET, Ttl: 1}
+				cn.Hdr = dns.RR_Header{Name: q.Name, Rrtype: dns.TypeCNAME, Class: dns.ClassINET, Ttl: uint32(n.Config.NS.Ttl)}
 				cn.Target = fmt.Sprintf("%s.%s.", uuid.New().String(), n.Config.NS.DefaultDomain)
 				r = append(r, cn)
 				// Add the A answer for the CNAME target to the response
 				a := new(dns.A)
-				a.Hdr = dns.RR_Header{Name: cn.Target, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 1}
+				a.Hdr = dns.RR_Header{Name: cn.Target, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: uint32(n.Config.NS.Ttl)}
 				ipv4Addr, _, _ := net.ParseCIDR(n.Config.NS.NSResponseIP + "/32")
 				a.A = ipv4Addr
 				r = append(r, a)

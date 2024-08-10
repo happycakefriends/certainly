@@ -37,6 +37,7 @@ type nameserver struct {
 	NSResponseIP  string   `toml:"ns_response_ip"`
 	Debug         bool     `toml:"debug"`
 	StaticRecords []string `toml:"records"`
+	Ttl           int      `toml:"ttl"`
 }
 
 // Logging config
