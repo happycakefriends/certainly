@@ -157,7 +157,7 @@ Inbound HTTPS request %s from: %s
 	})
 
 	srv := &http.Server{
-		Addr:      config.HTTPD.HTTPSPort,
+		Addr:      ":" + config.HTTPD.HTTPSPort,
 		Handler:   handler,
 		TLSConfig: tlsconfig,
 		ErrorLog:  stderrorlog,
@@ -226,7 +226,7 @@ Inbound plaintext HTTP request from: %s
 	})
 
 	srv := &http.Server{
-		Addr:     config.HTTPD.HTTPPort,
+		Addr:     ":" + config.HTTPD.HTTPPort,
 		Handler:  handler,
 		ErrorLog: stderrorlog,
 	}
