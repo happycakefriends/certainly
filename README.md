@@ -148,8 +148,114 @@ sudo systemctl start certainly
 sudo systemctl enable certainly
 ```
 
-### 7) Configure the domain
-Point the nameservers of your domain to certainly instance at your registrars configuration panel. This varies based on registrar. You may need to use a helper domain with a static record pointing towards Certainly instance.
+### 7) Setting Up DNS Configuration with Certainly
+
+1. **Choose and Configure a master domains for DNS Management**
+    
+    Begin by selecting a master domain, which we'll refer to as `grandma.tld`, and configure it to be hosted by your DNS provider. Create and point `ns1.grandma.tld` and `ns2.grandma.tld` to the IP address of your VPS (Virtual Private Server) that is going to host Certainly. This setup allows you to easily manage DNS records—if the IP address changes, you only need to update these two records.
+    
+2. **Select a Primary Domain for Your Setup**
+    
+    Choose a `default_domain` for your configuration, referred to here as the **Mother Domain**. This domain will serve as the default domain for all DNS responses. So it should be a domain you own and can control. We'll call it `mom.tld`. Since this is the domain that will be used with a uuid for any CNAME lookup performed on any of the bitflip/typo domains, it might be a good idea to have a domain name thats similar to you targets domain.  or if your runnings loots of different target domains on the same box, use one that has no connection to the targets, being sneaky is a win here.
+    
+    Update your configuration file with the following:
+    
+    - Add the IP address of your VPS. to the config using `ip=1.2.3.4`
+    - Set the **Mother Domain** (`example mom.tld`) as the `default_domain=`
+    - Include any custom DNS entries. (Certainly in a fully functional Nameserver so add whatever you like here, maybe a custom txt record to indicate that you are a good person?)
+    - Specify the domains you intend to point to the vps to capture and respond to in the `[ns] domains` section. As seen in the example below.
+      
+3. **Point Domains to Your Nameservers**
+    
+    After updating the configuration file and ensuring your VPS is operational, change the nameserver of the domains you want to manage to `ns1.grandma.tld` and `ns2.grandma.tld` using your DNS provider. This action ensures that all DNS requests for these domains are captured and managed by the custom DNS server in your certainly setup.
+
+Here are some guides from popular domains providers as a inspiration how to perform this step:
+
+https://docs.gandi.net/en/domain_names/common_operations/changing_nameservers.html#nameservers
+
+https://www.godaddy.com/help/edit-my-domain-nameservers-664
+    
+4. **Configure Rewrites and TLS Settings**
+    
+    To keep stealth, provide a seamless experience for any connecting clients and to utilize Certainly's injection capabilities, you should configure the `[rewrites]` section of your configuration file. Here’s what you need to do:
+    
+    - **Add Rewrite Rules**: Specify domain matching pairs.
+    Example `"coogle.com" = "google.com"` as seen in this example, any connection to the hosted flip domain (`coogle.com`) will be redirected using a 307 to the real (`google.com`). Since we are delivering the client to the real domain there isnt any Denial of Service event happening and the connecting client will happily continue its flow.
+        
+    - **Enable Stealth Mode (Optional)**: If you prefer to operate in stealth mode, set `tls_upstream_check = true`. This setting forces Certainly to before issuing any certificates or responding to any DNS request to verify the existence of the matching target subdomain before responding to requests.
+
+    - **Set Up TLS Filters**: Use the `tls_filters` setting to drop any incoming TLS requests that match any predefined regex patterns. This is particularly useful for filtering out noise and whilefocusing on specific subdomains. For example: maybe you only want to catch some sweet api requests and dont care about common fuzz domains or www, then a simple filter like this might be in handy:
+```
+tls_filters = [
+'www|ns1|ns2|hostmaster|mail|owa|ssl|webmail|smtp'
+]
+```
+Resulting in a dropped client connection and a logged entry `"msg":"http: TLS handshake error from 1.2.3.4: certificate is not allowed for server name blahwww.subdomain.target.tld: decision func: not allowed due to tls filter configuration"}`
+
+##Enable Stealth Mode (Optional)
+Note: Enabling the `tls_upstream_check = true` feature may cause you to miss some subdomain flips or typo hits. For example `login.target.tld` might exists upstream, while `lkgin.target.tld` most likely does not.
+
+```
+Client performs a host lookup:
+Host mx.coogle.com
+
+Certainly performs:
+Host mx.google.com and receives "not found: 3 (NXDOMAIN)"
+Since the upstream subdomain doesn't exist, Certainly will drop the session.
+```
+
+Example of `tls_upstream_check = true` feature with a Valid Upstream Domain:
+```
+Client performs a lookup for:
+Host mail.coogle.com
+
+Certainly performs:
+Host mail.google.com and receives "mail.google.com has address 142.250.74.101"
+
+Since the upstream domain exists, a response will be delivered to the client using Certainly's IP.
+If an HTTP/S TCP connection is made, Certainly will hold the session, generate a wildcard certificate for `*.coogle.com`, and release the session once the certificate is in place.
+```
+
+To sum the features and getting started settings, here is a example of a config file, where we used real world domains for the ease of understanding, and has nothing to do with the real targets used.
+
+### Example Configuration 
+
+```
+[General]
+ip = "1.2.3.4"
+tls_upstream_check = false
+tls_filters = [
+  'ns1|ns2|hostmaster|mail|owa|ssl|webmail|smtp',
+  # 'www\.',
+  "third_regex"
+]
+
+[ns]
+port = "53"
+protocol = "both4"
+default_domain = "mom.tld"
+domains = [
+  "mom.tld",
+  "c  oogle.com",
+  "woogle.com",
+  "amazkn.com",
+  "gordpress.com",
+]
+nsname = "ns.mom.tld"
+nsadmin = "admin.mom.tld"
+records = [
+  # Any static records go here in zone file format
+  "ns.mom.tld. A 1.2.3.4",
+  "ns.mom.tld. NS ns.mom.tld.",
+]
+
+[rewrites]
+  "coogle.com" = "google.com"
+  "woogle.com" = "google.com"
+  "amazkn.com" = "amazon.com"
+  "gordpress.com" = "wordpress.com"
+
+```
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/2cfe181c-602f-4fb5-b99b-971ac0b07500" width="200" />
