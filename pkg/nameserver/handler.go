@@ -88,6 +88,15 @@ func (n *Nameserver) answer(q dns.Question, remoteAddr string) ([]dns.RR, int, b
 			r = append(r, a)
 		}
 	}
+	if q.Qtype == dns.TypeAAAA {
+		if n.answeringForDomain(q.Name) {
+			a := new(dns.AAAA)
+			a.Hdr = dns.RR_Header{Name: q.Name, Rrtype: dns.TypeAAAA, Class: dns.ClassINET, Ttl: uint32(n.Config.NS.Ttl)}
+			ipv6Addr, _, _ := net.ParseCIDR(n.Config.NS.NSResponseIP6 + "/128")
+			a.AAAA = ipv6Addr
+			r = append(r, a)
+		}
+	}
 	if q.Qtype == dns.TypeCNAME {
 		if !util.HasApexDomain(q.Name, n.Config.NS.DefaultDomain) {
 			// Do not answer CNAMES for the default domain to prevent endless loops because of some resolvers

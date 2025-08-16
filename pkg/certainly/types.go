@@ -35,6 +35,7 @@ type nameserver struct {
 	Nsname        string   `toml:"nsname"`
 	Nsadmin       string   `toml:"nsadmin"`
 	NSResponseIP  string   `toml:"ns_response_ip"`
+	NSResponseIP6 string   `toml:"ns_response_ip6"`
 	Debug         bool     `toml:"debug"`
 	StaticRecords []string `toml:"records"`
 	Ttl           int      `toml:"ttl"`
